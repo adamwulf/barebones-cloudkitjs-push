@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+            <title>CloudKit Test</title>
+    </head>
+    <body>
+        <div id='apple-sign-in-button'></div>
+        <div id='apple-sign-out-button'></div>
+
+        <script src="https://cdn.apple-cloudkit.com/ck/1/cloudkit.js" async></script>
+        <script>
+        console.log = function(str){
+        	document.getElementById("log").appendChild(document.createTextNode(str));
+        	document.getElementById("log").appendChild(document.createElement("br"));
+        };
+        
+        
+        window.addEventListener('cloudkitloaded',function(){
+        	console.log("cloudkitloaded");
+	        CloudKit.configure({
+			    containers: [{
+						containerIdentifier: 'iCloud.com.milestonemade.cloudkitjs-push',
+						apiToken: 'd063c9165f26fedd1d1c53ccb52c2a75075348a1c286b5b94ffe59e9d4ca9f63',
+						auth: {
+							persist: true // Sets a cookie.
+						},
+						environment: 'development'
+					}]
+			});
+			CloudKit.getDefaultContainer().setUpAuth().then(function(){
+	        	console.log("authenticated");
+				window.setInterval(function(){
+					console.log("adding a record...");
+					// add a record every 15 seconds
+					var privateDB = CloudKit.getDefaultContainer().privateCloudDatabase;
+					
+					var record = {
+				        recordType: 'AnObjectType',
+				        fields: {
+				          sampleField: {
+				            value: "sample title"
+				          }
+				        }
+				      };
+				      
+				      var options = undefined;
+				      privateDB.saveRecord(record,options).then(function(response) {
+				          if(response.hasErrors) {
+							  console.log("error");
+							  console.log(response.errors[0]);
+				          } else {
+							  console.log("created record");
+				          }
+			        }).catch(function(e){
+						console.log("error...");
+						console.log(e);
+					});
+					
+				}, 5000);
+			});
+        });
+        </script>
+        
+        <div id='log'>
+        </div>
+    </body>
+</html>

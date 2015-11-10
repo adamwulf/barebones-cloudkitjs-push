@@ -35,8 +35,7 @@
         CKModifySubscriptionsOperation* delSubOp = [[CKModifySubscriptionsOperation alloc] initWithSubscriptionsToSave:@[] subscriptionIDsToDelete:subsToDelete];
         delSubOp.modifySubscriptionsCompletionBlock = ^(NSArray* savedSubs, NSArray* deletedSubs, NSError* err){
             NSAssert(!err, @"no error");
-            NSDate* date = [NSDate dateWithTimeInterval:-60.0 * 120 sinceDate:[NSDate date]];
-            CKSubscription* newSub = [[CKSubscription alloc] initWithRecordType:@"AnObjectType" predicate:[NSPredicate predicateWithFormat:@"creationDate > %@", date] options:CKSubscriptionOptionsFiresOnRecordDeletion];
+            CKSubscription* newSub = [[CKSubscription alloc] initWithRecordType:@"AnObjectType" predicate:[NSPredicate predicateWithFormat:@"TRUEPREDICATE"] options:CKSubscriptionOptionsFiresOnRecordCreation];
             [self logMessage:[NSString stringWithFormat:@"deleted %d subscriptions", (int) [deletedSubs count]]];
             [self logMessage:[NSString stringWithFormat:@"creating new subscription"]];
             [[[CKContainer defaultContainer] privateCloudDatabase] saveSubscription:newSub completionHandler:^(CKSubscription *subscription, NSError *error) {
